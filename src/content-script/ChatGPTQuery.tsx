@@ -81,7 +81,7 @@ function ChatGPTQuery(props: Props) {
     return (
       <div className="markdown-body gpt-markdown" id="gpt-answer" dir="auto">
         <div className="gpt-header">
-          <span className="font-bold">ChatGPT</span>
+          <span className="font-bold">ChatGLM</span>
           <span className="cursor-pointer leading-[0]" onClick={openOptionsPage}>
             <GearIcon size={14} />
           </span>
@@ -91,7 +91,7 @@ function ChatGPTQuery(props: Props) {
             answerText={answer.text}
           />
         </div>
-        <ReactMarkdown rehypePlugins={[[rehypeHighlight, { detect: true }]]}>
+        <ReactMarkdown rehypePlugins={[[rehypeHighlight, { detect: true, ignoreMissing: true}]]}>
           {answer.text}
         </ReactMarkdown>
         {done && showTip && (
@@ -149,7 +149,7 @@ function ChatGPTQuery(props: Props) {
     )
   }
 
-  return <p className="text-[#b6b8ba] animate-pulse">Waiting for ChatGPT response...</p>
+  return <p className="text-[#b6b8ba] animate-pulse">Waiting for LLM response...</p>
 }
 
 export default memo(ChatGPTQuery)

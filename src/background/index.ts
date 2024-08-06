@@ -3,20 +3,24 @@ import { getProviderConfigs, ProviderType } from '../config'
 import { ChatGPTProvider, getChatGPTAccessToken, sendMessageFeedback } from './providers/chatgpt'
 import { OpenAIProvider } from './providers/openai'
 import { Provider } from './types'
+import {ChatGLMProvider} from "./providers/chatglm";
 
 async function generateAnswers(port: Browser.Runtime.Port, question: string) {
   const providerConfigs = await getProviderConfigs()
 
   let provider: Provider
-  if (providerConfigs.provider === ProviderType.ChatGPT) {
-    const token = await getChatGPTAccessToken()
-    provider = new ChatGPTProvider(token)
-  } else if (providerConfigs.provider === ProviderType.GPT3) {
-    const { apiKey, model } = providerConfigs.configs[ProviderType.GPT3]!
-    provider = new OpenAIProvider(apiKey, model)
-  } else {
-    throw new Error(`Unknown provider ${providerConfigs.provider}`)
-  }
+  // if (providerConfigs.provider === ProviderType.ChatGPT) {
+  //   const token = await getChatGPTAccessToken()
+  //   provider = new ChatGPTProvider(token)
+  // } else if (providerConfigs.provider === ProviderType.GPT3) {
+  //   const { apiKey, model } = providerConfigs.configs[ProviderType.GPT3]!
+  //   provider = new OpenAIProvider(apiKey, model)
+  // } if (providerConfigs.provider === ProviderType.ChatGLM){
+  //   provider = new ChatGLMProvider()
+  // } else {
+  //   throw new Error(`Unknown provider ${providerConfigs.provider}`)
+  // }
+  provider = new ChatGLMProvider(); //固定使用ChatGLM
 
   const controller = new AbortController()
   port.onDisconnect.addListener(() => {
@@ -51,8 +55,8 @@ Browser.runtime.onConnect.addListener((port) => {
 
 Browser.runtime.onMessage.addListener(async (message) => {
   if (message.type === 'FEEDBACK') {
-    const token = await getChatGPTAccessToken()
-    await sendMessageFeedback(token, message.data)
+    // const token = await getChatGPTAccessToken()
+    // await sendMessageFeedback(token, message.data)
   } else if (message.type === 'OPEN_OPTIONS_PAGE') {
     Browser.runtime.openOptionsPage()
   } else if (message.type === 'GET_ACCESS_TOKEN') {

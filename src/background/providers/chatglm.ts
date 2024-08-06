@@ -2,6 +2,7 @@ import ExpiryMap from 'expiry-map'
 import {v4 as uuidv4} from 'uuid'
 import {fetchSSE} from '../fetch-sse'
 import {GenerateAnswerParams, Provider} from '../types'
+import {cookies} from "webextension-polyfill";
 
 async function request(token: string, method: string, path: string, data?: unknown) {
     return fetch(`https://chat.openai.com/backend-api${path}`, {
@@ -14,10 +15,6 @@ async function request(token: string, method: string, path: string, data?: unkno
     })
 }
 
-export async function sendMessageFeedback(token: string, data: unknown) {
-    await request(token, 'POST', '/conversation/message_feedback', data)
-}
-
 export async function setConversationProperty(
     token: string,
     conversationId: string,
@@ -26,66 +23,34 @@ export async function setConversationProperty(
     await request(token, 'PATCH', `/conversation/${conversationId}`, propertyObject)
 }
 
-const KEY_ACCESS_TOKEN = 'accessToken'
-
-const cache = new ExpiryMap(10 * 1000)
-
-export async function getChatGPTAccessToken(): Promise<string> {
-    if (cache.get(KEY_ACCESS_TOKEN)) {
-        return cache.get(KEY_ACCESS_TOKEN)
-    }
-    const resp = await fetch('https://chat.openai.com/api/auth/session')
-    if (resp.status === 403) {
-        throw new Error('CLOUDFLARE')
-    }
-    const data = await resp.json().catch(() => ({}))
-    if (!data.accessToken) {
-        throw new Error('UNAUTHORIZED')
-    }
-    cache.set(KEY_ACCESS_TOKEN, data.accessToken)
-    return data.accessToken
+export async function getAccessToken(): Promise<string> {
+    let authInfo = await cookies.get({url: 'https://chatglm.cn/', name: 'chatglm_token'});
+    return authInfo.value;
 }
 
-export class ChatGPTProvider implements Provider {
-    constructor(private token: string) {
-        this.token = token
-    }
 
-    private async fetchModels(): Promise<{ slug: string; title: string; description: string; max_tokens: number }[]> {
-        const resp = await request(this.token, 'GET', '/models').then((r) => r.json())
-        return resp.models
-    }
+export class ChatGLMProvider implements Provider {
 
-    private async getModelName(): Promise<string> {
-        try {
-            const models = await this.fetchModels()
-            return models[0].slug
-        } catch (err) {
-            console.error(err)
-            return 'text-davinci-002-render'
-        }
+    constructor() {
+
     }
 
     async generateAnswer(params: GenerateAnswerParams) {
+        let token = await getAccessToken()
         let conversationId: string | undefined
 
         const cleanup = () => {
-            if (conversationId) {
-                setConversationProperty(this.token, conversationId, {is_visible: false})
+            if (conversationId) {   //清理会话
+                setConversationProperty(token, conversationId, {is_visible: false})
             }
         }
 
-        const modelName = await this.getModelName()
-        console.debug('Using model:', modelName)
-
-        // await fetchSSE('https://chat.openai.com/backend-api/conversation', {
         await fetchSSE('https://chatglm.cn/chatglm/backend-api/assistant/stream', {
             method: 'POST',
             signal: params.signal,
             headers: {
                 'Content-Type': 'application/json',
-                // Authorization: `Bearer ${this.token}`,
-                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4MDEzMDk5ZWVjM2I0OTA3YTZjN2NjZDhkNTFkNGE5OCIsImV4cCI6MTcyMjkyNTczMiwibmJmIjoxNzIyODM5MzMyLCJpYXQiOjE3MjI4MzkzMzIsImp0aSI6IjdhNzNhODc0ZmZlYjQ0ODNhNmE4YjU1NjA1YThiMTEzIiwidWlkIjoiNjU0NDRhYTc3YTZjZTlkYjg5MzIxYzRkIiwidHlwZSI6ImFjY2VzcyJ9.w-wcge7FiZpzajwUWN2ZHLhtgrvzqPmpyQly5nQ-T-0`,
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
                 "assistant_id": "65940acff94777010aa6b796",
@@ -98,30 +63,9 @@ export class ChatGPTProvider implements Provider {
                     "draft_id": "",
                     "quote_log_id": ""
                 },
-                "messages": [{"role": "user", "content": [{"type": "text", "text": "nginx配置负载均衡"}]}]
+                "messages": [{"role": "user", "content": [{"type": "text", "text": "请用中文回答下列问题: "+params.prompt}]}]
             }),
-            // body: JSON.stringify({
-            //   action: 'next',
-            //   messages: [
-            //     {
-            //       id: uuidv4(),
-            //       role: 'user',
-            //       content: {
-            //         content_type: 'text',
-            //         parts: [params.prompt],
-            //       },
-            //     },
-            //   ],
-            //   model: modelName,
-            //   parent_message_id: uuidv4(),
-            // }),
             onMessage(message: string) {
-                console.debug('sse message', message)
-                // if (message === '[DONE]') {
-                //   params.onEvent({ type: 'done' })
-                //   cleanup()
-                //   return
-                // }
                 let data
                 try {
                     data = JSON.parse(message)
@@ -129,15 +73,15 @@ export class ChatGPTProvider implements Provider {
                     console.error(err)
                     return
                 }
-                console.log(data);
-                const text = data.message?.content?.parts?.[0]
+                const text = data.parts?.[0]?.content?.[0]?.text
+                console.log(text);
                 if (text) {
                     conversationId = data.conversation_id
                     params.onEvent({
                         type: 'answer',
                         data: {
                             text,
-                            messageId: data.message.id,
+                            messageId: data.id,
                             conversationId: data.conversation_id,
                         },
                     })

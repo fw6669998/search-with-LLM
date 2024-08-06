@@ -10,8 +10,8 @@
     "48": "logo.png",
     "128": "logo.png"
   },
-  "host_permissions": ["https://*.openai.com/"],
-  "permissions": ["storage"],
+  "host_permissions": ["https://*.openai.com/","https://chatglm.cn/"],
+  "permissions": ["storage","cookies"],
   "background": {
     "service_worker": "background.js"
   },
@@ -232,8 +232,12 @@
         "https://*.yandex.by/search*",
         "https://searx.be/search*"
       ],
-      "js": ["content-script.js"],
-      "css": ["content-script.css"]
+      "js": [
+        "content-script.js"
+      ],
+      "css": [
+        "content-script.css"
+      ]
     }
   ]
 }
