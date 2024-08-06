@@ -1,5 +1,5 @@
 # 说明
-项目说明: 使用主流搜索引擎搜索的时候, 同时使用ChatGLM大语言模型在搜索页生成搜索结果的chrome插件
+项目说明: 使用主流搜索引擎搜索的时候, 同时使用ChatGLM大语言模型在搜索页旁生成结果的chrome插件
 
 基于项目: [chatgpt-google-extension](https://github.com/wong2/chatgpt-google-extension)
 
