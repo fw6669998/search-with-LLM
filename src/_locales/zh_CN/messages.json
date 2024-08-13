@@ -1,8 +1,8 @@
 {
   "appName": {
-    "message": "ChatGPT for Google"
+    "message": "search with LLM"
   },
   "appDesc": {
-    "message": "在搜索引擎结果中同时显示ChatGPT的回答"
+    "message": "针对网页内容提问, 在搜索引擎结果中同时显示ChatGLM的回答"
   }
 }

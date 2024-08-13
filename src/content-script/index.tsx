@@ -6,6 +6,13 @@ import ChatGPTContainer from './ChatGPTContainer'
 import { config, SearchEngine } from './search-engine-configs'
 import './styles.scss'
 import { getPossibleElementByQuerySelector } from './utils'
+import browser from "webextension-polyfill";
+
+browser.runtime.onMessage.addListener( async (msg, sender) => {
+  if (msg == 'GET_HTML') {
+    return document.documentElement.innerText;
+  }
+});
 
 async function mount(question: string, siteConfig: SearchEngine) {
   const container = document.createElement('div')
@@ -35,8 +42,15 @@ async function mount(question: string, siteConfig: SearchEngine) {
     }
   }
 
+  let searchPrompt =userConfig.searchPrompt
+  if (searchPrompt.indexOf("{{query}}") == -1) {
+    searchPrompt = searchPrompt + "{{query}}"
+  }
+  let prompt=searchPrompt.replace("{{query}}", question)
+  console.log(searchPrompt)
+
   render(
-    <ChatGPTContainer question={question} triggerMode={userConfig.triggerMode || 'always'} />,
+    <ChatGPTContainer question={prompt} triggerMode={userConfig.triggerMode || 'always'} />,
     container,
   )
 }
@@ -49,11 +63,8 @@ async function run() {
   const searchInput = getPossibleElementByQuerySelector<HTMLInputElement>(siteConfig.inputQuery)
   if (searchInput && searchInput.value) {
     console.debug('Mount ChatGPT on', siteName)
-    const userConfig = await getUserConfig()
-    const searchValueWithLanguageOption =
-      userConfig.language === Language.Auto
-        ? searchInput.value
-        : `${searchInput.value}(in ${userConfig.language})`
+    // const userConfig = await getUserConfig()
+    const searchValueWithLanguageOption = searchInput.value
     mount(searchValueWithLanguageOption, siteConfig)
   }
 }

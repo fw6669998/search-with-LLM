@@ -81,7 +81,7 @@ function ChatGPTQuery(props: Props) {
     return (
       <div className="markdown-body gpt-markdown" id="gpt-answer" dir="auto">
         <div className="gpt-header">
-          <span className="font-bold">ChatGLM</span>
+          <span className="font-bold"><a href='https://chatglm.cn/main/alltoolsdetail' target='_blank'>ChatGLM</a></span>
           <span className="cursor-pointer leading-[0]" onClick={openOptionsPage}>
             <GearIcon size={14} />
           </span>
@@ -98,7 +98,7 @@ function ChatGPTQuery(props: Props) {
           <p className="italic mt-2">
             Enjoy this extension? Give us a 5-star rating at{' '}
             <a
-              href="https://chatgpt4google.com/chrome?utm_source=rating_tip"
+              href="https://github.com/fw6669998/search-with-LLM"
               target="_blank"
               rel="noreferrer"
             >
@@ -110,41 +110,42 @@ function ChatGPTQuery(props: Props) {
     )
   }
 
-  if (error === 'UNAUTHORIZED' || error === 'CLOUDFLARE') {
-    return (
-      <p>
-        Please login and pass Cloudflare check at{' '}
-        <a href="https://chat.openai.com" target="_blank" rel="noreferrer">
-          chat.openai.com
-        </a>
-        {retry > 0 &&
-          (() => {
-            if (isBraveBrowser()) {
-              return (
-                <span className="block mt-2">
-                  Still not working? Follow{' '}
-                  <a href="https://github.com/wong2/chat-gpt-google-extension#troubleshooting">
-                    Brave Troubleshooting
-                  </a>
-                </span>
-              )
-            } else {
-              return (
-                <span className="italic block mt-2 text-xs">
-                  OpenAI requires passing a security check every once in a while. If this keeps
-                  happening, change AI provider to OpenAI API in the extension options.
-                </span>
-              )
-            }
-          })()}
-      </p>
-    )
-  }
+  {/*if (error === 'UNAUTHORIZED' || error === 'CLOUDFLARE') {*/}
+  {/*  return (*/}
+  {/*    <p>*/}
+  {/*      Please login and pass Cloudflare check at{' '}*/}
+  {/*      <a href="https://chat.openai.com" target="_blank" rel="noreferrer">*/}
+  //         chat.openai.com
+  //       </a>
+  //       {retry > 0 &&
+  //         (() => {
+  //           if (isBraveBrowser()) {
+  //             return (
+  //               <span className="block mt-2">
+  //                 Still not working? Follow{' '}
+  //                 <a href="https://github.com/wong2/chat-gpt-google-extension#troubleshooting">
+  //                   Brave Troubleshooting
+  //                 </a>
+  //               </span>
+  //             )
+  //           } else {
+  //             return (
+  //               <span className="italic block mt-2 text-xs">
+  //                 OpenAI requires passing a security check every once in a while. If this keeps
+  //                 happening, change AI provider to OpenAI API in the extension options.
+  //               </span>
+  //             )
+  //           }
+  //         })()}
+  //     </p>
+  //   )
+  // }
   if (error) {
+    console.log('error', error)
     return (
       <p>
-        Failed to load response from ChatGPT:
-        <span className="break-all block">{error}</span>
+        Failed to load response from ChatGLM:
+        <span className="break-all block">请尝试登陆或重新进入 <a href={'https://chatglm.cn/main/alltoolsdetail'} target={'_blank'}>ChatGLM</a> 官网后重试</span>
       </p>
     )
   }

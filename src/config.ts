@@ -8,14 +8,14 @@ export enum TriggerMode {
 }
 
 export const TRIGGER_MODE_TEXT = {
-  [TriggerMode.Always]: { title: 'Always', desc: 'ChatGPT is queried on every search' },
+  [TriggerMode.Always]: { title: '总是', desc: '每次查询都生成答案' },
   [TriggerMode.QuestionMark]: {
-    title: 'Question Mark',
-    desc: 'When your query ends with a question mark (?)',
+    title: '?标记',
+    desc: '查询以问号(?)结尾时生成答案',
   },
   [TriggerMode.Manually]: {
-    title: 'Manually',
-    desc: 'ChatGPT is queried when you manually click a button',
+    title: '手动',
+    desc: '手动单击按钮生成答案',
   },
 }
 
@@ -37,10 +37,13 @@ export enum Language {
   Portuguese = 'portuguese',
 }
 
-const userConfigWithDefaultValue = {
+export const userConfigWithDefaultValue = {
   triggerMode: TriggerMode.Always,
   theme: Theme.Auto,
   language: Language.Auto,
+  command:"总结全文",
+  searchPrompt:"对以下问题提供帮助和信息，使用中文回答。\n问题: {{query}}",
+  pageChatPrompt:"根据以下内容回答问题,。\n问题: {{query}}。\n内容: {{html}}"
 }
 
 export type UserConfig = typeof userConfigWithDefaultValue
@@ -56,9 +59,10 @@ export async function updateUserConfig(updates: Partial<UserConfig>) {
 }
 
 export enum ProviderType {
-  ChatGPT = 'chatgpt',
-  GPT3 = 'gpt3',
-  ChatGLM = 'chatglm',
+  ChatGPT = 'chatgpt',  //对应网页
+  GPT3 = 'gpt3',  //对应api
+  // ChatGLM = 'chatglm',
+  // ChatGLMApi = 'chatglmApi',
 }
 
 interface GPT3ProviderConfig {

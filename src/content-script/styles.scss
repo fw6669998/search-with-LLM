@@ -96,3 +96,62 @@
     }
   }
 }
+
+.search-with-llm-popup {
+  background-color: #2d333d;
+}
+
+#web-page-content-chat-j2jkw{
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #adb5bd;
+    padding-bottom: 5px;
+    border-bottom: #0d1117 1px solid;
+  }
+
+  .command-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    font-size: 14px;
+    padding: 5px;
+    //border-radius: 8px;
+    //height: 28px;
+
+  }
+
+  .cmd {
+    padding: 5px 10px;
+    margin-right: 5px;
+    background-color: #cfd4da;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+    //background-color: #8c959f;
+  }
+
+  .cmd-input {
+    padding: 6px;
+    border: 1px solid #ccc;
+    background-color: #bbc1c9;
+    border-radius: 3px;
+    outline: none;
+    font-size: 14px;
+    width: 100%;
+  }
+
+  .summary {
+    border: 1px solid #21262e;
+    border-radius: 1px;
+    font-size: 14px;
+  }
+}

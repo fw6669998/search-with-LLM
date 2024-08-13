@@ -13,11 +13,11 @@ interface Props {
 
 function ChatGPTContainer(props: Props) {
   const [queryStatus, setQueryStatus] = useState<QueryStatus>()
-  const query = useSWRImmutable(
-    queryStatus === 'success' ? 'promotion' : undefined,
-    fetchPromotion,
-    { shouldRetryOnError: false },
-  )
+  // const query = useSWRImmutable(
+  //   queryStatus === 'success' ? 'promotion' : undefined,
+  //   fetchPromotion,
+  //   { shouldRetryOnError: false },
+  // )
   return (
     <>
       <div className="chat-gpt-card">
@@ -27,7 +27,7 @@ function ChatGPTContainer(props: Props) {
           onStatusChange={setQueryStatus}
         />
       </div>
-      {query.data && <Promotion data={query.data} />}
+      {/*{query.data && <Promotion data={query.data} />}*/}
     </>
   )
 }

@@ -2,10 +2,12 @@ import ExpiryMap from 'expiry-map'
 import {v4 as uuidv4} from 'uuid'
 import {fetchSSE} from '../fetch-sse'
 import {GenerateAnswerParams, Provider} from '../types'
-import {cookies} from "webextension-polyfill";
+import Browser, {cookies} from "webextension-polyfill";
+import {getUserConfig} from "../../config";
 
 async function request(token: string, method: string, path: string, data?: unknown) {
-    return fetch(`https://chat.openai.com/backend-api${path}`, {
+    // return fetch(`https://chat.openai.com/backend-api${path}`, {
+    return fetch(`https://chatglm.cn/chatglm/backend-api${path}`, {
         method,
         headers: {
             'Content-Type': 'application/json',
@@ -20,7 +22,16 @@ export async function setConversationProperty(
     conversationId: string,
     propertyObject: object,
 ) {
-    await request(token, 'PATCH', `/conversation/${conversationId}`, propertyObject)
+    await request(token, 'PATCH', `/assistant/conversation/${conversationId}`, propertyObject)
+}
+
+export async function deleteConversation(
+    token: string,
+    conversationId: string,
+) {
+    console.log('delete',token,conversationId)
+    await request(token, 'POST', `/assistant/conversation/delete`,
+        {conversation_id: conversationId, assistant_id: "65940acff94777010aa6b796"})
 }
 
 export async function getAccessToken(): Promise<string> {
@@ -35,14 +46,28 @@ export class ChatGLMProvider implements Provider {
 
     }
 
+    clearLastConversation(token: string, conversationId: string | undefined) {
+        console.log("clearLastConversation", conversationId)
+        // if (conversationId) {
+        //     deleteConversation(token, conversationId)
+        // }
+        // 在下次对话时，删除前一次会话
+        Browser.storage.local.get("lastConversationId").then((result) => {
+            if (result.lastConversationId) {
+                console.log("clearLastConversation2", conversationId)
+                deleteConversation(token, result.lastConversationId)
+            }
+        })
+        Browser.storage.local.set({lastConversationId: conversationId})
+    }
+
     async generateAnswer(params: GenerateAnswerParams) {
         let token = await getAccessToken()
         let conversationId: string | undefined
 
         const cleanup = () => {
-            if (conversationId) {   //清理会话
-                setConversationProperty(token, conversationId, {is_visible: false})
-            }
+            console.log("cleanup")
+            // this.clearLastConversation(token, conversationId)
         }
 
         await fetchSSE('https://chatglm.cn/chatglm/backend-api/assistant/stream', {
@@ -63,7 +88,7 @@ export class ChatGLMProvider implements Provider {
                     "draft_id": "",
                     "quote_log_id": ""
                 },
-                "messages": [{"role": "user", "content": [{"type": "text", "text": "请用中文回答下列问题: "+params.prompt}]}]
+                "messages": [{"role": "user", "content": [{"type": "text", "text": params.prompt}]}]
             }),
             onMessage(message: string) {
                 let data
@@ -74,7 +99,7 @@ export class ChatGLMProvider implements Provider {
                     return
                 }
                 const text = data.parts?.[0]?.content?.[0]?.text
-                console.log(text);
+                // console.log(text);
                 if (text) {
                     conversationId = data.conversation_id
                     params.onEvent({

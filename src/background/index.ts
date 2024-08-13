@@ -4,23 +4,32 @@ import { ChatGPTProvider, getChatGPTAccessToken, sendMessageFeedback } from './p
 import { OpenAIProvider } from './providers/openai'
 import { Provider } from './types'
 import {ChatGLMProvider} from "./providers/chatglm";
+import {ChatGLMApiProvider} from "./providers/chatGLMApi";
 
 async function generateAnswers(port: Browser.Runtime.Port, question: string) {
   const providerConfigs = await getProviderConfigs()
 
   let provider: Provider
+
+  if (providerConfigs.provider === ProviderType.ChatGPT) {
+    provider = new ChatGLMProvider()
+  } else if (providerConfigs.provider === ProviderType.GPT3) {
+    const { apiKey, model } = providerConfigs.configs[ProviderType.GPT3]!
+    provider = new ChatGLMApiProvider(apiKey, model)
+  }else{
+    throw new Error(`Unknown provider ${providerConfigs.provider}`)
+  }
+
   // if (providerConfigs.provider === ProviderType.ChatGPT) {
   //   const token = await getChatGPTAccessToken()
   //   provider = new ChatGPTProvider(token)
   // } else if (providerConfigs.provider === ProviderType.GPT3) {
   //   const { apiKey, model } = providerConfigs.configs[ProviderType.GPT3]!
   //   provider = new OpenAIProvider(apiKey, model)
-  // } if (providerConfigs.provider === ProviderType.ChatGLM){
-  //   provider = new ChatGLMProvider()
   // } else {
   //   throw new Error(`Unknown provider ${providerConfigs.provider}`)
   // }
-  provider = new ChatGLMProvider(); //固定使用ChatGLM
+  // provider = new ChatGLMProvider(); //固定使用ChatGLM
 
   const controller = new AbortController()
   port.onDisconnect.addListener(() => {

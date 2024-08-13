@@ -61,18 +61,18 @@ function ChatGPTFeedback(props: Props) {
 
   return (
     <div className="gpt-feedback">
-      <span
-        onClick={clickThumbsUp}
-        className={action === 'thumbsUp' ? 'gpt-feedback-selected' : undefined}
-      >
-        <ThumbsupIcon size={14} />
-      </span>
-      <span
-        onClick={clickThumbsDown}
-        className={action === 'thumbsDown' ? 'gpt-feedback-selected' : undefined}
-      >
-        <ThumbsdownIcon size={14} />
-      </span>
+      {/*<span*/}
+      {/*  onClick={clickThumbsUp}*/}
+      {/*  className={action === 'thumbsUp' ? 'gpt-feedback-selected' : undefined}*/}
+      {/*>*/}
+      {/*  <ThumbsupIcon size={14} />*/}
+      {/*</span>*/}
+      {/*<span*/}
+      {/*  onClick={clickThumbsDown}*/}
+      {/*  className={action === 'thumbsDown' ? 'gpt-feedback-selected' : undefined}*/}
+      {/*>*/}
+      {/*  <ThumbsdownIcon size={14} />*/}
+      {/*</span>*/}
       <span onClick={clickCopyToClipboard}>
         {copied ? <CheckIcon size={14} /> : <CopyIcon size={14} />}
       </span>

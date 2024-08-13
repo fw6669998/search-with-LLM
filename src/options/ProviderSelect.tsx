@@ -10,8 +10,9 @@ interface ConfigProps {
 }
 
 async function loadModels(): Promise<string[]> {
-  const configs = await fetchExtensionConfigs()
-  return configs.openai_model_names
+  // const configs = await fetchExtensionConfigs()
+  // return configs.openai_model_names
+  return ['glm-3-turbo','glm-4','glm-4-long','glm-4-air','glm-4-flash','glm-4-9b']
 }
 
 const ConfigPanel: FC<ConfigProps> = ({ config, models }) => {
@@ -23,11 +24,11 @@ const ConfigPanel: FC<ConfigProps> = ({ config, models }) => {
   const save = useCallback(async () => {
     if (tab === ProviderType.GPT3) {
       if (!apiKeyBindings.value) {
-        alert('Please enter your OpenAI API key')
+        alert('请输入你的chatGLM API key')
         return
       }
       if (!model || !models.includes(model)) {
-        alert('Please select a valid model')
+        alert('请选择模型')
         return
       }
     }
@@ -43,14 +44,14 @@ const ConfigPanel: FC<ConfigProps> = ({ config, models }) => {
   return (
     <div className="flex flex-col gap-3">
       <Tabs value={tab} onChange={(v) => setTab(v as ProviderType)}>
-        <Tabs.Item label="ChatGPT webapp" value={ProviderType.ChatGPT}>
-          The API that powers ChatGPT webapp, free, but sometimes unstable
+        <Tabs.Item label="ChatGLM 网页" value={ProviderType.ChatGPT}>
+          支持ChatGLM网页的API, 免费, 但有时不稳定, 如无法使用尝试重新打开ChatGLM的网页
         </Tabs.Item>
-        <Tabs.Item label="OpenAI API" value={ProviderType.GPT3}>
+        <Tabs.Item label="ChatGLM API" value={ProviderType.GPT3}>
           <div className="flex flex-col gap-2">
             <span>
-              OpenAI official API, more stable,{' '}
-              <span className="font-semibold">charge by usage</span>
+              ChatGLM官方的API, 更稳定
+              {/*<span className="font-semibold">charge by usage</span>*/}
             </span>
             <div className="flex flex-row gap-2">
               <Select
@@ -70,7 +71,7 @@ const ConfigPanel: FC<ConfigProps> = ({ config, models }) => {
             <span className="italic text-xs">
               You can find or create your API key{' '}
               <a
-                href="https://platform.openai.com/account/api-keys"
+                href="https://open.bigmodel.cn/usercenter/apikeys"
                 target="_blank"
                 rel="noreferrer"
               >

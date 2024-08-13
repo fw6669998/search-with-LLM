@@ -1,8 +1,8 @@
 {
   "appName": {
-    "message": "ChatGPT for Google"
+    "message": "search with LLM"
   },
   "appDesc": {
-    "message": "Display ChatGPT response alongside search engine results"
+    "message": "ChatGLM's answers to questions about web content are displayed in search engine results"
   }
 }
