@@ -29,7 +29,7 @@ export async function deleteConversation(
     token: string,
     conversationId: string,
 ) {
-    console.log('delete',token,conversationId)
+    console.log('delete',conversationId)
     await request(token, 'POST', `/assistant/conversation/delete`,
         {conversation_id: conversationId, assistant_id: "65940acff94777010aa6b796"})
 }
