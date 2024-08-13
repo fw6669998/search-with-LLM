@@ -65,8 +65,8 @@ export class ChatGLMProvider implements Provider {
         let token = await getAccessToken()
         let conversationId: string | undefined
 
-        const cleanup = () => {
-            console.log("cleanup")
+        const cleanup = () => { //
+            // console.log("cleanup")
             // this.clearLastConversation(token, conversationId)
         }
 
@@ -112,6 +112,8 @@ export class ChatGLMProvider implements Provider {
                     })
                 }
             },
+        }).then(()=>{
+            this.clearLastConversation(token, conversationId)
         })
         return {cleanup}
     }
