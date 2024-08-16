@@ -7,6 +7,8 @@
 
 使用前提: 访问[ChatGLM](https://chatglm.cn/)网站并登陆
 
+在线安装: [Edge插件商店](https://microsoftedge.microsoft.com/addons/Microsoft-Edge-Extensions-Home)搜索 search with LLM 安装
+
 离线安装:
 1.安装依赖包: npm install, 
 2.构建: npm run build, 
